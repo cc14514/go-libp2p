@@ -39,9 +39,3 @@ require (
 )
 
 go 1.13
-
-replace github.com/libp2p/go-libp2p-swarm => ../go-libp2p-swarm
-
-replace github.com/libp2p/go-tcp-transport => ../go-tcp-transport
-
-replace github.com/cc14514/go-mux-transport => ../go-mux-transport
