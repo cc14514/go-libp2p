@@ -40,8 +40,4 @@ require (
 
 go 1.13
 
-//replace github.com/libp2p/go-libp2p-swarm => ../go-libp2p-swarm
-
-//replace github.com/libp2p/go-tcp-transport => ../go-tcp-transport
-
-//replace github.com/cc14514/go-mux-transport => ../go-mux-transport
+replace github.com/libp2p/go-libp2p-swarm => github.com/cc14514/go-libp2p-swarm v0.0.0-20200118064831-601363b81fc2
