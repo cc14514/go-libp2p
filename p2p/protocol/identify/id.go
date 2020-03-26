@@ -5,7 +5,6 @@ import (
 	"fmt"
 	netmux "github.com/cc14514/go-mux-transport"
 	manet "github.com/multiformats/go-multiaddr-net"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -222,11 +221,11 @@ func (ids *IDService) populateMessage(mes *pb.Identify, c network.Conn) {
 	// set listen addrs, get our latest addrs from Host.
 	laddrs := ids.Host.Addrs()
 	// add by liangc >>
-	if os.Getenv("alibp2prelay") == "enable" {
-		log.Info("IDService-Enable-Relay", "A >--(B relay)--> C")
-		raddr, _ := ma.NewMultiaddr("/p2p-circuit/ipfs/" + ids.Host.ID().Pretty())
-		laddrs = append(laddrs, raddr)
-	}
+	//if os.Getenv("alibp2prelay") == "enable" {
+	//log.Info("IDService-Enable-Relay", "A >--(B relay)--> C")
+	raddr, _ := ma.NewMultiaddr("/p2p-circuit/ipfs/" + ids.Host.ID().Pretty())
+	laddrs = append(laddrs, raddr)
+	//}
 	// add by liangc <<
 	mes.ListenAddrs = make([][]byte, len(laddrs))
 	for i, addr := range laddrs {
