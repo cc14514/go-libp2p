@@ -46,11 +46,14 @@ type mocknet struct {
 }
 
 func New(ctx context.Context) Mocknet {
+	proc := goprocessctx.WithContext(ctx)
+	ctx = goprocessctx.WithProcessClosing(ctx, proc)
+
 	return &mocknet{
 		nets:  map[peer.ID]*peernet{},
 		hosts: map[peer.ID]*bhost.BasicHost{},
 		links: map[peer.ID]map[peer.ID]map[*link]struct{}{},
-		proc:  goprocessctx.WithContext(ctx),
+		proc:  proc,
 		ctx:   ctx,
 	}
 }
@@ -286,7 +289,7 @@ func (mn *mocknet) UnlinkNets(n1, n2 network.Network) error {
 	return mn.UnlinkPeers(n1.LocalPeer(), n2.LocalPeer())
 }
 
-// get from the links map. and lazily contruct.
+// get from the links map. and lazily construct.
 func (mn *mocknet) linksMapGet(p1, p2 peer.ID) map[*link]struct{} {
 
 	l1, found := mn.links[p1]

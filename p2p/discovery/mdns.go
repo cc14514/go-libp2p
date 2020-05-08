@@ -49,7 +49,11 @@ type mdnsService struct {
 
 func getDialableListenAddrs(ph host.Host) ([]*net.TCPAddr, error) {
 	var out []*net.TCPAddr
-	for _, addr := range ph.Addrs() {
+	addrs, err := ph.Network().InterfaceListenAddresses()
+	if err != nil {
+		return nil, err
+	}
+	for _, addr := range addrs {
 		na, err := manet.ToNetAddr(addr)
 		if err != nil {
 			continue
@@ -115,8 +119,9 @@ func (m *mdnsService) Close() error {
 }
 
 func (m *mdnsService) pollForEntries(ctx context.Context) {
-
 	ticker := time.NewTicker(m.interval)
+	defer ticker.Stop()
+
 	for {
 		//execute mdns query right away at method call and then with every tick
 		entriesCh := make(chan *mdns.ServiceEntry, 16)
@@ -136,7 +141,7 @@ func (m *mdnsService) pollForEntries(ctx context.Context) {
 
 		err := mdns.Query(qp)
 		if err != nil {
-			log.Error("mdns lookup error: ", err)
+			log.Warnw("mdns lookup error", "error", err)
 		}
 		close(entriesCh)
 		log.Debug("mdns query complete")

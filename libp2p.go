@@ -2,14 +2,13 @@ package libp2p
 
 import (
 	"context"
-	"github.com/libp2p/go-libp2p-core/metrics"
 
 	config "github.com/libp2p/go-libp2p/config"
 
 	"github.com/libp2p/go-libp2p-core/host"
 )
 
-// Config describes a set of settings for a libp2p node
+// Config describes a set of settings for a libp2p node.
 type Config = config.Config
 
 // Option is a libp2p config option that can be given to the libp2p constructor
@@ -47,7 +46,7 @@ func ChainOptions(opts ...Option) Option {
 // - If no security transport is provided, the host uses the go-libp2p's secio
 // encrypted transport to encrypt all traffic;
 //
-// - If no peer identity is provided, it generates a random RSA 2048 key-par
+// - If no peer identity is provided, it generates a random RSA 2048 key-pair
 // and derives a new identity from it;
 //
 // - If no peerstore is provided, the host is initialized with an empty
@@ -70,22 +69,4 @@ func NewWithoutDefaults(ctx context.Context, opts ...Option) (host.Host, error) 
 		return nil, err
 	}
 	return cfg.NewNode(ctx)
-}
-
-func New2(ctx context.Context, opts ...Option) (host.Host, metrics.Reporter, error) {
-	return NewWithoutDefaults2(ctx, append(opts, FallbackDefaults)...)
-}
-
-// NewWithoutDefaults constructs a new libp2p node with the given options but
-// *without* falling back on reasonable defaults.
-//
-// Warning: This function should not be considered a stable interface. We may
-// choose to add required services at any time and, by using this function, you
-// opt-out of any defaults we may provide.
-func NewWithoutDefaults2(ctx context.Context, opts ...Option) (host.Host, metrics.Reporter, error) {
-	var cfg Config
-	if err := cfg.Apply(opts...); err != nil {
-		return nil, nil, err
-	}
-	return cfg.NewNode2(ctx)
 }
