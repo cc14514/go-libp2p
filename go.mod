@@ -2,7 +2,7 @@ module github.com/libp2p/go-libp2p
 
 require (
     // add by liangc
-	github.com/cc14514/go-mux-transport v0.0.0-20191107033455-2e89816349e6
+	github.com/cc14514/go-mux-transport v0.0.3-rc0
 	github.com/gogo/protobuf v1.3.1
 	github.com/ipfs/go-cid v0.0.5
 	github.com/ipfs/go-detect-race v0.0.1
