@@ -96,6 +96,8 @@ type Config struct {
 	EnableAutoRelay bool
 	AutoNATConfig
 	StaticRelays []peer.AddrInfo
+
+	Groupid string // add by liangc : for id protocol and private dht group
 }
 
 func (cfg *Config) makeSwarm(ctx context.Context) (*swarm.Swarm, error) {
@@ -206,6 +208,7 @@ func (cfg *Config) NewNode(ctx context.Context) (host.Host, error) {
 		NATManager:   cfg.NATManager,
 		EnablePing:   !cfg.DisablePing,
 		UserAgent:    cfg.UserAgent,
+		Groupid:      cfg.Groupid, // add by liangc
 	})
 
 	if err != nil {

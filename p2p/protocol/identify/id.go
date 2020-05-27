@@ -76,6 +76,7 @@ const transientTTL = 10 * time.Second
 type IDService struct {
 	Host      host.Host
 	UserAgent string
+	Groupid   string // add by liangc
 
 	ctx       context.Context
 	ctxCancel context.CancelFunc
@@ -118,9 +119,9 @@ func NewIDService(h host.Host, opts ...Option) *IDService {
 
 	hostCtx, cancel := context.WithCancel(context.Background())
 	s := &IDService{
-		Host:      h,
-		UserAgent: userAgent,
-
+		Host:          h,
+		UserAgent:     userAgent,
+		Groupid:       cfg.groupid, // add by liangc
 		ctx:           hostCtx,
 		ctxCancel:     cancel,
 		conns:         make(map[network.Conn]chan struct{}),
@@ -478,6 +479,12 @@ func (ids *IDService) populateMessage(mes *pb.Identify, c network.Conn, usePeerR
 	av := ids.UserAgent
 	mes.ProtocolVersion = &pv
 	mes.AgentVersion = &av
+	// TODO : add by liangc : sign by privatekey
+	fmt.Println("Write_GID >>", ids.Groupid)
+	fmt.Println("Write_GID >>", ids.Groupid)
+	fmt.Println("Write_GID >>", ids.Groupid)
+	fmt.Println("Write_GID >>", ids.Groupid)
+	mes.Groupid = []byte(ids.Groupid)
 }
 
 // modify by liangc : 响应时带上 relay 和 netmux 地址，并过滤回环地址
@@ -596,7 +603,12 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c network.Conn, usePeerRe
 	// get protocol versions
 	pv := mes.GetProtocolVersion()
 	av := mes.GetAgentVersion()
-
+	gid := string(mes.GetGroupid()) // TODO : add by liangc : verify sign
+	fmt.Println("Read_GID >>", p.Pretty(), gid)
+	fmt.Println("Read_GID >>", p.Pretty(), gid)
+	fmt.Println("Read_GID >>", p.Pretty(), gid)
+	fmt.Println("Read_GID >>", p.Pretty(), gid)
+	ids.Host.Peerstore().Put(p, "Groupid", string(gid))
 	ids.Host.Peerstore().Put(p, "ProtocolVersion", pv)
 	ids.Host.Peerstore().Put(p, "AgentVersion", av)
 

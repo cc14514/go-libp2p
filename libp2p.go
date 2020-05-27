@@ -2,6 +2,7 @@ package libp2p
 
 import (
 	"context"
+	"fmt"
 
 	config "github.com/libp2p/go-libp2p/config"
 
@@ -68,5 +69,11 @@ func NewWithoutDefaults(ctx context.Context, opts ...Option) (host.Host, error) 
 	if err := cfg.Apply(opts...); err != nil {
 		return nil, err
 	}
+	fmt.Println("===============>", cfg.Groupid)
+	fmt.Println("===============>", cfg.Groupid)
+	fmt.Println("===============>", cfg.Groupid)
+	fmt.Println("===============>", cfg.Groupid)
+	fmt.Println("===============>", cfg.Groupid)
+	fmt.Println("===============>", cfg.Groupid)
 	return cfg.NewNode(ctx)
 }

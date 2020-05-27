@@ -37,6 +37,9 @@ message Identify {
   // a delta update is incompatible with everything else. If this field is included, none of the others can appear.
   optional Delta delta = 7;
 
+  // add by liangc : take groupid to join private routing table.
+  optional bytes groupid = 9;
+
   // signedPeerRecord contains a serialized SignedEnvelope containing a PeerRecord,
   // signed by the sending node. It contains the same addresses as the listenAddrs field, but
   // in a form that lets us share authenticated addrs with other peers.

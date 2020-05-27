@@ -417,3 +417,11 @@ func UserAgent(userAgent string) Option {
 		return nil
 	}
 }
+
+// add by liangc : set groupid
+func Groupid(gid string) Option {
+	return func(cfg *Config) error {
+		cfg.Groupid = gid
+		return nil
+	}
+}
