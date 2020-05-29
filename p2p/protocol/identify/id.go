@@ -480,10 +480,6 @@ func (ids *IDService) populateMessage(mes *pb.Identify, c network.Conn, usePeerR
 	mes.ProtocolVersion = &pv
 	mes.AgentVersion = &av
 	// TODO : add by liangc : sign by privatekey
-	fmt.Println("Write_GID >>", ids.Groupid)
-	fmt.Println("Write_GID >>", ids.Groupid)
-	fmt.Println("Write_GID >>", ids.Groupid)
-	fmt.Println("Write_GID >>", ids.Groupid)
 	mes.Groupid = []byte(ids.Groupid)
 }
 
@@ -604,10 +600,6 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c network.Conn, usePeerRe
 	pv := mes.GetProtocolVersion()
 	av := mes.GetAgentVersion()
 	gid := string(mes.GetGroupid()) // TODO : add by liangc : verify sign
-	fmt.Println("Read_GID >>", p.Pretty(), gid)
-	fmt.Println("Read_GID >>", p.Pretty(), gid)
-	fmt.Println("Read_GID >>", p.Pretty(), gid)
-	fmt.Println("Read_GID >>", p.Pretty(), gid)
 	ids.Host.Peerstore().Put(p, "Groupid", string(gid))
 	ids.Host.Peerstore().Put(p, "ProtocolVersion", pv)
 	ids.Host.Peerstore().Put(p, "AgentVersion", av)
