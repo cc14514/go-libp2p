@@ -71,9 +71,5 @@ func NewWithoutDefaults(ctx context.Context, opts ...Option) (host.Host, error) 
 	}
 	fmt.Println("===============>", cfg.Groupid)
 	fmt.Println("===============>", cfg.Groupid)
-	fmt.Println("===============>", cfg.Groupid)
-	fmt.Println("===============>", cfg.Groupid)
-	fmt.Println("===============>", cfg.Groupid)
-	fmt.Println("===============>", cfg.Groupid)
 	return cfg.NewNode(ctx)
 }
