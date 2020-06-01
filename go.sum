@@ -22,7 +22,6 @@ github.com/btcsuite/websocket v0.0.0-20150119174127-31079b680792/go.mod h1:ghJtE
 github.com/btcsuite/winsvc v1.0.0/go.mod h1:jsenWakMcC0zFBFurPLEAyrnc/teJEM1O46fmI40EZs=
 github.com/cc14514/go-mux-transport v0.0.0-20191107033455-2e89816349e6 h1:Tx6qekZFFD7bvQDG4V5Pn8qlCizDE85TNGnPbneLKac=
 github.com/cc14514/go-mux-transport v0.0.0-20191107033455-2e89816349e6/go.mod h1:Xpnt1yTwWgRdeR7VeQafDvmjqteADg6QKwG1X14WJeE=
-github.com/cc14514/go-mux-transport v0.0.3-rc0/go.mod h1:/WvYd0WvFvOSZSRgeQpBDRfFSEzRTEZ2NhvCJwUckbw=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/coreos/etcd v3.3.10+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=

@@ -134,8 +134,6 @@ type HostOpts struct {
 
 	// UserAgent sets the user-agent for the host. Defaults to ClientVersion.
 	UserAgent string
-
-	Groupid string // add by liangc
 }
 
 // NewHost constructs a new *BasicHost and activates it by attaching its stream and connection handlers to the given inet.Network.
@@ -178,7 +176,7 @@ func NewHost(ctx context.Context, net network.Network, opts *HostOpts) (*BasicHo
 	}
 
 	// we can't set this as a default above because it depends on the *BasicHost.
-	h.ids = identify.NewIDService(h, identify.UserAgent(opts.UserAgent), identify.Groupid(opts.Groupid)) // add by liangc : groupid
+	h.ids = identify.NewIDService(h, identify.UserAgent(opts.UserAgent))
 
 	if uint64(opts.NegotiationTimeout) != 0 {
 		h.negtimeout = opts.NegotiationTimeout
