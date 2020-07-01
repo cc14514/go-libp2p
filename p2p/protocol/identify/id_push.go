@@ -10,7 +10,9 @@ import (
 //
 // It is in the process of being replaced by identify delta, which sends only diffs for better
 // resource utilisation.
-const IDPush = "/p2p/id/push/1.1.0"
+
+//const IDPush = "/p2p/id/push/1.1.0"
+const IDPush = LegacyIDPush // TODO : modify by liangc : 1.1.0 协议还没看懂
 
 // LegacyIDPush is the protocol.ID of the previous version of the Identify push protocol,
 // which does not support exchanging signed addresses in PeerRecords.

@@ -32,7 +32,8 @@ import (
 var log = logging.Logger("net/identify")
 
 // ID is the protocol.ID of the Identify Service.
-const ID = "/p2p/id/1.1.0"
+//const ID = "/p2p/id/1.1.0"
+const ID = LegacyID // TODO : modify by liangc : 1.1.0 协议还没看懂
 
 // LegacyID is the protocol.ID of version 1.0.0 of the identify
 // service, which does not support signed peer records.
@@ -433,12 +434,13 @@ func (ids *IDService) populateMessage(mes *pb.Identify, c network.Conn, usePeerR
 		// set listen addrs, get our latest addrs from Host.
 		laddrs := ids.Host.Addrs()
 		// add by liangc : 默认带上 relay 地址 >>>>
-		raddr, _ := ma.NewMultiaddr("/p2p-circuit/ipfs/" + ids.Host.ID().Pretty())
+		raddr, _ := ma.NewMultiaddr("/p2p-circuit/p2p/" + ids.Host.ID().Pretty())
 		laddrs = append(laddrs, raddr)
 		// add by liangc : 默认带上 relay 地址 <<<<
 		// Note: LocalMultiaddr is sometimes 0.0.0.0
 		viaLoopback := manet.IsIPLoopback(c.LocalMultiaddr()) || manet.IsIPLoopback(c.RemoteMultiaddr())
 		mes.ListenAddrs = make([][]byte, 0, len(laddrs))
+		log.Debugf("populateMessage : id=%v , addrs=%v", ids.Host.ID().Pretty(), laddrs)
 		for _, addr := range laddrs {
 			// add by liangc : filter out backoff addr >>>>
 			if strings.Contains(addr.String(), "127.0.0.1") || strings.Contains(addr.String(), "localhost") {
