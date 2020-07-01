@@ -492,12 +492,11 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c network.Conn, usePeerRe
 
 	// mes.ListenAddrs
 	laddrs := mes.GetListenAddrs()
-	lmaddrs := make([]ma.Multiaddr, 0, len(laddrs))
+	lmaddrs := make([]ma.Multiaddr, 0)
 	for _, addr := range laddrs {
 		maddr, err := ma.NewMultiaddrBytes(addr)
 		if err != nil {
-			log.Debugf("%s failed to parse multiaddr from %s %s", ID,
-				p, c.RemoteMultiaddr())
+			log.Debugf("%s failed to parse multiaddr from %s %s", ID, p, c.RemoteMultiaddr())
 			continue
 		}
 		// add by liangc >>>>
@@ -507,28 +506,28 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c network.Conn, usePeerRe
 		// add by liangc <<<<
 		lmaddrs = append(lmaddrs, maddr)
 	}
-
 	// add by liangc >>>>
 	var (
-		raddr, _          = ma.NewMultiaddr("/p2p-circuit/ipfs/" + p.Pretty())
+		raddr, _          = ma.NewMultiaddr("/p2p-circuit/p2p/" + p.Pretty())
 		isRelay           = strings.Contains(c.RemoteMultiaddr().String(), "/p2p-circuit")
 		ipmap             = netmux.MaddrsToIps(lmaddrs)
 		portmap           = netmux.MaddrsToPorts(lmaddrs)
 		muxAddr, localMux = netmux.MuxAddress(ids.Host.Addrs())
 	)
 	lmaddrs = append(lmaddrs, raddr)
+	log.Debugf("listen addrs filter : %d -> %d , %v -> %v , isRelay=%v , remoteAddr=%v",
+		len(laddrs), len(lmaddrs), laddrs, lmaddrs, isRelay, c.RemoteMultiaddr().String())
 	if !isRelay {
 		// 拆公网 IP 并拼装到 pi 中
 		if _, ipp, err := manet.DialArgs(c.RemoteMultiaddr()); err == nil {
-			//fmt.Println("> ipp", ipp)
 			// 公网 IP
 			rip := strings.Split(ipp, ":")[0]
-			//fmt.Println("> rip", rip)
 			// 如果已经在 ipmap 中就不用处理了
 			if (rip == "127.0.0.1" || rip == "localhost") && localMux {
 				// TODO 如果本地开启 mux 服务并且远端 ip 是来自 localhost 则去 mux 询问
 				_, _, fport, _ := netmux.SplitMuxAddr(muxAddr)
 				rip, err = netmux.GetRealIP(c.RemoteMultiaddr(), c.LocalMultiaddr(), fport)
+				log.Debugf("get real ip from netmux : err=%v , rip=%v , ipmap=%v", err, rip, ipmap)
 			}
 			if _, ok := ipmap[rip]; !ok && err == nil {
 				// 将公网 ip 加入 地址列表, 只处理 tcp4 和 mux 协议
@@ -539,7 +538,7 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c network.Conn, usePeerRe
 				for port, proto := range portmap {
 					raddr := fmt.Sprintf("/ip4/%s/%s/%s", rip, proto, port)
 					mraddr, err := ma.NewMultiaddr(raddr)
-					//fmt.Println("idservice-set-realip", err, raddr)
+					log.Debugf("idservice-set-realip : err=%v , raddr=%v", err, raddr)
 					if err == nil {
 						lmaddrs = append(lmaddrs, mraddr)
 					}
@@ -547,6 +546,7 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c network.Conn, usePeerRe
 			}
 		}
 	}
+	log.Debugf("result lmaddrs : %v", lmaddrs)
 	// add by liangc <<<<
 
 	// NOTE: Do not add `c.RemoteMultiaddr()` to the peerstore if the remote
@@ -586,8 +586,10 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c network.Conn, usePeerRe
 		if addErr != nil {
 			log.Debugf("error adding signed addrs to peerstore: %v", addErr)
 		}
+		log.Debugf("signedPeerRecord : ConsumePeerRecord not addAddrs to peerstore")
 	} else {
 		ids.Host.Peerstore().AddAddrs(p, lmaddrs, ttl)
+		log.Debugf("add addrs to peerstore : ttl=%v , addrs=%v", ttl, lmaddrs)
 	}
 	ids.addrMu.Unlock()
 
