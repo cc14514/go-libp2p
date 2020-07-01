@@ -310,7 +310,9 @@ func (ids *IDService) identifyConn(c network.Conn, signal chan struct{}) {
 }
 
 func protoSupportsPeerRecords(proto protocol.ID) bool {
-	return proto == ID || proto == IDPush
+	//return proto == ID || proto == IDPush
+	// TODO modify by liangc : 搞懂之后再升级
+	return false
 }
 
 func (ids *IDService) requestHandler(s network.Stream) {
