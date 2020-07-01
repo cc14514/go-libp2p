@@ -550,18 +550,19 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c network.Conn, usePeerRe
 		}
 	}
 
-	appendRelay := false
+	// TODO 去重 lmaddrs
+	lmaddrs = append(lmaddrs, raddr)
+	log.Debugf("filter-maddrs-before : %v", lmaddrs)
+	filter := make(map[string]ma.Multiaddr)
 	for _, a := range lmaddrs {
-		if a.Equal(raddr) {
-			appendRelay = true
-			break
-		}
+		filter[a.String()] = a
 	}
-	if appendRelay {
-		lmaddrs = append(lmaddrs, raddr)
+	lmaddrs = make([]ma.Multiaddr, 0)
+	for _, a := range filter {
+		lmaddrs = append(lmaddrs, a)
 	}
-
-	log.Debugf("result lmaddrs : %v", lmaddrs)
+	log.Debugf("filter-maddrs-after : %v", lmaddrs)
+	// TODO 去重 lmaddrs
 	// add by liangc <<<<
 
 	// NOTE: Do not add `c.RemoteMultiaddr()` to the peerstore if the remote
