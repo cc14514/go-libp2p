@@ -518,7 +518,6 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c network.Conn, usePeerRe
 		portmap           = netmux.MaddrsToPorts(lmaddrs)
 		muxAddr, localMux = netmux.MuxAddress(ids.Host.Addrs())
 	)
-	lmaddrs = append(lmaddrs, raddr)
 	log.Debugf("listen addrs filter : %d -> %d , %v -> %v , isRelay=%v , remoteAddr=%v",
 		len(laddrs), len(lmaddrs), laddrs, lmaddrs, isRelay, c.RemoteMultiaddr().String())
 	if !isRelay {
@@ -550,6 +549,18 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c network.Conn, usePeerRe
 			}
 		}
 	}
+
+	appendRelay := false
+	for _, a := range lmaddrs {
+		if a.Equal(raddr) {
+			appendRelay = true
+			break
+		}
+	}
+	if appendRelay {
+		lmaddrs = append(lmaddrs, raddr)
+	}
+
 	log.Debugf("result lmaddrs : %v", lmaddrs)
 	// add by liangc <<<<
 
