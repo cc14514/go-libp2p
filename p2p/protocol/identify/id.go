@@ -32,8 +32,9 @@ import (
 var log = logging.Logger("net/identify")
 
 // ID is the protocol.ID of the Identify Service.
-//const ID = "/p2p/id/1.1.0"
-const ID = LegacyID // TODO : modify by liangc : 1.1.0 协议还没看懂
+const ID = "/p2p/id/1.1.0"
+
+//const ID = LegacyID // TODO : modify by liangc : 1.1.0 协议还没看懂
 
 // LegacyID is the protocol.ID of version 1.0.0 of the identify
 // service, which does not support signed peer records.
@@ -297,7 +298,8 @@ func (ids *IDService) identifyConn(c network.Conn, signal chan struct{}) {
 		return
 	}
 
-	protocolIDs := []string{ID, LegacyID}
+	protocolIDs := []string{LegacyID} // add by liangc : 1.1.0 不支持编辑 addrs , 不适合国内网络
+	//protocolIDs := []string{ID, LegacyID}
 	// ok give the response to our handler.
 	var selectedProto string
 	if selectedProto, err = msmux.SelectOneOf(protocolIDs, s); err != nil {
@@ -310,9 +312,7 @@ func (ids *IDService) identifyConn(c network.Conn, signal chan struct{}) {
 }
 
 func protoSupportsPeerRecords(proto protocol.ID) bool {
-	//return proto == ID || proto == IDPush
-	// TODO modify by liangc : 搞懂之后再升级
-	return false
+	return proto == ID || proto == IDPush
 }
 
 func (ids *IDService) requestHandler(s network.Stream) {
