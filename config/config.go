@@ -6,6 +6,8 @@ import (
 	"fmt"
 	netmux "github.com/cc14514/go-mux-transport"
 	"github.com/libp2p/go-tcp-transport"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/libp2p/go-libp2p-core/connmgr"
@@ -270,7 +272,7 @@ func (cfg *Config) NewNode(ctx context.Context) (host.Host, error) {
 	// Configure routing and autorelay
 	var router routing.PeerRouting
 	if cfg.Routing != nil {
-		log.Warn("Error1---->", h.Addrs(), cfg.Routing)
+		log.Warn("---->", h.Addrs(), cfg.Routing)
 		router, err = cfg.Routing(h)
 		if err != nil {
 			h.Close()
@@ -279,12 +281,34 @@ func (cfg *Config) NewNode(ctx context.Context) (host.Host, error) {
 	}
 
 	// add by liangc : 启动 muxTransport >>>>
+	// 200702 : 适配随机端口，如果是随机端口，需要从 tcp 协议中拿到端口，再重新构建 netmux 地址，并且注册到 netmux
 	if muxAddr != nil {
+		mm, mc := ma.SplitLast(muxAddr)
+		_muxAddr := strings.Split(mc.String(), ":")
+		mport, tport := _muxAddr[0], _muxAddr[1]
+		//log.Debugf("Listen address : %v , mm = %v , mc = %v , mport = %v , tport = %v", h.Network().ListenAddresses(), mm, mc, mport, tport)
+		if tport == "0" { // 前面使用了随机端口,要把端口拿出来拼上来
+			for _, a := range h.Network().ListenAddresses() {
+				if _, c := ma.SplitLast(a); c.Protocol().Code == ma.P_TCP {
+					//log.Debugf("%d , %v : %v : isTcp %v : %v", i, a, c, c.Protocol().Code == ma.P_TCP, c.String()[5:])
+					tport = c.String()[5:]
+				}
+			}
+			_muxproto := strings.Join([]string{mport, tport}, ":")
+			muxAddr, _ = ma.NewMultiaddr(mm.String() + _muxproto)
+			//log.Debugf("r-muxaddr = %v", muxAddr)
+		}
 		if err := h.Network().Listen(muxAddr); err != nil {
 			h.Close()
 			return nil, err
 		}
+		maddr, ok := netmux.MuxAddress(h.Network().ListenAddresses())
+		log.Debugf("Listen muxAddr : %v , %v", ok, maddr)
+		_rmport, _ := strconv.Atoi(mport[5:])
+		_rtport, _ := strconv.Atoi(tport)
+		netmux.Register(ctx, _rmport, _rtport)
 	}
+
 	// add by liangc : 启动 muxTransport <<<<
 
 	// Note: h.AddrsFactory may be changed by AutoRelay, but non-relay version is
